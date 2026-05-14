@@ -171,7 +171,9 @@ This kit uses semantic versioning (`vMAJOR.MINOR.PATCH`). A MAJOR version bump s
 
 ## License
 
-MIT — see [`LICENSE`](LICENSE). Use freely, including in commercial projects. Keep the copyright notice.
+Copyright 2026 Gabriel Olson
+
+Licensed under the Apache License, Version 2.0. See [`LICENSE`](LICENSE) for details.
 
 ---
 

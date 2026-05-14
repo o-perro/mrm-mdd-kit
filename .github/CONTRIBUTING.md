@@ -94,6 +94,14 @@ Be direct, be accurate, be respectful. This is a professional toolkit for practi
 
 ---
 
+## License
+
+By submitting a pull request or contribution to this project, you agree that your contributions will be licensed under the Apache License, Version 2.0, the same license that covers this project.
+
+See [LICENSE](../LICENSE) for details.
+
+---
+
 ## Questions
 
 Open a GitHub issue with the `question` label. For regulatory interpretation questions, note that responses reflect the maintainer's reading of public guidance and should not be relied upon as legal or compliance advice.
