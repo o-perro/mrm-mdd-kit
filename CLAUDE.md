@@ -118,21 +118,13 @@ Work through sections in order: Document Control → Section 1 → Section 2 →
 
 **Do not draft sections you cannot ground in evidence.** If a section requires performance metrics and no experiment logs exist, say: *"I don't see performance results in the project artifacts. Can you share the evaluation output, or should I add a placeholder noting this needs to be completed?"* Never fabricate metrics.
 
-### Step 4: Flag Governance Gaps
+### Step 4: Flag Template Completion Gaps
 
-As you work through each section, maintain a running list of governance gaps — things that are required for a complete, regulatorily sound MDD but are missing from the project. At the end of the session, present these as a punch list.
+As you work through each section, maintain a running list of sections the selected template requires that cannot be filled yet because the necessary project artifacts do not exist. Present these at the end of the session as a punch list of what still needs to be completed before the MDD can be submitted.
 
-Common gaps to watch for:
-- No holdout / test set (data leakage risk)
-- Prompts hardcoded rather than versioned (for LLM models)
-- No output validation (for LLM models)
-- LLM model version not pinned
-- No experiment log
-- Monitoring thresholds not defined
-- Model owner not identified
-- No compensating controls documented for known limitations
+Your job is to fill out the template — not to assess regulatory compliance. The template was designed by MRM to cover the regulatory and governance requirements. If a required section can be filled, fill it. If it cannot be filled because the artifact is missing, flag it as incomplete and leave a placeholder.
 
-Present gaps as: *"I found the following governance gaps that should be addressed before this MDD is submitted for validation: [list]. Want to work through these now or flag them as open items?"*
+Present incomplete sections as: *"The following sections required by the template could not be completed — the project artifacts needed to fill them don't exist yet: [list]. Want to work through these now or leave them as placeholders?"*
 
 ### Step 5: Completion Check
 
@@ -177,16 +169,16 @@ Extract algorithm, framework, and version directly from the code and dependency 
 Never report training set performance as the primary result. Primary performance must be from the holdout / test set. If no holdout results exist in the project artifacts, flag this explicitly — do not fabricate numbers. Ask the developer to run final evaluation and share results before this section is completed.
 
 ### Section 7: Assumptions and Limitations
-This section requires the most human-LLM collaboration. Claude can identify technical assumptions from the code and methodology. The developer must provide operational and business assumptions. Every limitation must be paired with either a compensating control or an explicit "Accepted" decision. Do not minimize or omit limitations — undisclosed limitations are a regulatory finding.
+This section requires the most human-LLM collaboration. Claude can identify technical assumptions from the code and methodology. The developer must provide operational and business assumptions. If the template requires a compensating control or an explicit "Accepted" decision for each limitation, fill those fields — do not leave them blank. If the developer hasn't provided the information needed to fill a field, leave a placeholder and flag it as incomplete.
 
 ### Section 9: GenAI and LLM Governance (LLM models only)
-Locate prompt templates in the codebase — typically in `src/prompts/` or similar. If prompts are hardcoded inline rather than stored as versioned files, flag this as a governance finding. Identify the LLM provider and model version from the code or config. If the model version is not pinned, flag this. Identify output validation logic (Pydantic models, schema validation). If none exists, flag this as a critical gap.
+Locate prompt templates in the codebase — typically in `src/prompts/` or similar. If the template requires versioned prompt files and they are not present in the codebase, flag this section as incomplete. Identify the LLM provider and model version from the code or config. If the model version is not pinned, flag the relevant field as incomplete. Identify output validation logic (Pydantic models, schema validation). If the template requires this and it is absent, flag the section as incomplete.
 
 ### Section 10: Validation and Monitoring Plan
 Set monitoring thresholds based on development-time performance — not arbitrary round numbers. Warning threshold = development metric minus 1 standard deviation of CV performance. Action threshold = development metric minus 2 standard deviations. Always include PSI with standard thresholds (Warning > 0.10, Action > 0.25). Ask the developer to confirm the escalation path — who is notified, in what timeframe, what actions are available.
 
 ### Section 12: Governance
-The Model Owner must be a named individual — not a team. The validator must be a different person from the lead developer. If both are the same, flag this as a separation of duties gap. Ask the developer for the model inventory system name and model ID.
+Fill all fields the template requires. If a required field — such as Model Owner or validator name — has not been provided by the developer, leave a placeholder and flag it as incomplete. Ask the developer for the model inventory system name and model ID.
 
 ---
 
