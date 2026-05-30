@@ -69,6 +69,29 @@ Generating an MDD with Claude Code is **not a one-shot operation**. It is an ite
 
 ---
 
+## Continuous MDD Generation
+
+Whenever you are active in a project that uses this kit, advancing the MDD is your primary job — you do not wait for the developer to ask. The submodule can be added at any point in the modeling process, and your behavior adapts accordingly.
+
+**If added early in the project:** fill in what you can as artifacts appear — data pipeline written, feature engineering complete, model selected. Leave sections that depend on work not yet done as explicit placeholders and return to them as the project progresses. The MDD grows incrementally alongside the code.
+
+**If added later, when the developer is well along:** read the existing codebase top to bottom and fill out the MDD in a catch-up pass — inferring what you can from the code and asking the developer only for business context you cannot know. Sections where artifacts still don't exist get left as placeholders.
+
+**The constant in both cases:** never fabricate. If the artifact does not exist yet, the section waits. The MDD is always a faithful reflection of the current state of the project — never ahead of it, never behind it.
+
+As the project evolves, continuously pull from:
+
+- Feature lists and data dictionaries
+- Model configs and hyperparameters
+- Training and evaluation outputs
+- Performance metrics and validation results
+- Code comments and docstrings
+- Notebook narratives
+
+Every meaningful commit is an opportunity to enrich the document. The developer should feel like the MDD is writing itself alongside the code.
+
+---
+
 ## MDD Generation Workflow
 
 When a developer asks Claude to generate or work on an MDD for a project, follow this workflow precisely.
@@ -153,6 +176,136 @@ If any item is missing, surface it to the developer before marking the MDD compl
 
 ---
 
+## Template Gap Detection
+
+### When to check
+
+The template check fires as soon as you can confidently identify the algorithm and pattern from the codebase — regardless of when the submodule was added. There is no fixed trigger point.
+
+Look for these signals that a model choice has solidified:
+
+- Model is instantiated, trained, and evaluated
+- Model artifact has been saved or committed
+- Performance metrics have been logged
+- The same algorithm appears consistently across multiple files or commits
+
+If none of these signals are present yet, keep filling out whatever sections you can and revisit the template check as the project progresses. Never interrupt the developer to ask about algorithm choice before the codebase makes it clear.
+
+Once you can confidently identify the combination, cross-reference it against the approved template inventory in `_mrm-mdd-kit/templates/`.
+
+### If a match exists
+
+Proceed with MDD generation using the approved template and few-shot example. No interruption needed — just keep going.
+
+### If no match exists — confirmation conversation
+
+Ask once, clearly, conversationally:
+
+> "It looks like you've landed on [ALGORITHM] for a [PATTERN] task. I don't have an approved MDD template for this combination yet. I think I have enough context on the project to generate a first-pass candidate template — before I do, can you confirm this is your go-forward model? Once you confirm, I'll draft the candidate, flag the sections that need MRM review, and open the handoff PR — and you can keep moving the whole time."
+
+Never generate the candidate template or open the handoff PR without this explicit confirmation. The developer decides when to pull that trigger — not Claude.
+
+**If the developer confirms:** execute the Gap Handoff Workflow below.
+**If the developer says not yet:** acknowledge and back off completely. Re-prompt only when a materially different signal appears — a new algorithm introduced, a model artifact committed, or the developer explicitly asks. Never re-prompt on a timer or repeatedly.
+
+---
+
+## Gap Handoff Workflow
+
+This workflow executes only after the developer has explicitly confirmed their go-forward model in response to the confirmation conversation above. Claude never initiates this workflow on its own.
+
+### 0. Generate the candidate template
+
+Before classifying or flagging anything, generate a first-pass candidate template for this algorithm and pattern combination. Use the existing approved templates in `_mrm-mdd-kit/templates/` as few-shot context — they define the structure, depth, tone, and regulatory standard. Layer in everything you know about the specific project: the algorithm, data pipeline, output schema, feature set, and any development decisions already visible in the codebase.
+
+The result is a reasoned draft grounded in approved precedent and real project context — not a generic document. This candidate becomes the basis for both the project MDD (Steps 1–2 below) and the handoff PR to MRM (Step 3).
+
+### 1. Classify each affected section
+
+For every section in the closest existing approved template, classify it as:
+
+- **INHERITED** — applies as-is to the new combination. No changes needed.
+- **AMENDED** — same section, but content needs revision or extension for the new pattern or algorithm.
+- **NET NEW** — genuinely new section required that does not exist in any approved template.
+
+### 2. Keep filling out the MDD
+
+Do not stop MDD generation. Proceed as follows:
+
+- **INHERITED sections** — fill out normally, no flags needed.
+- **AMENDED sections** — take your best draft based on reasoning from existing approved templates and your knowledge of the model type. Mark clearly at the top of each section:
+
+> `⚠️ DRAFT — PENDING MRM REVIEW — This section has been amended for [ALGORITHM] / [PATTERN] and requires MRM approval before submission.`
+
+- **NET NEW sections** — draft these as well, making clear they are candidate content. Mark clearly:
+
+> `⚠️ DRAFT — NET NEW SECTION — PENDING MRM REVIEW — This section does not exist in any currently approved template. MRM must review and approve before submission.`
+
+The developer can see all of this, understand what is settled and what is pending, and keep moving. The MDD is never fully blocked.
+
+### 3. Fire the handoff to mrm-mdd-template-generator
+
+Use `gh pr create` to open a PR directly in `mrm-mdd-template-generator`. The PR is the trigger — a GitHub Actions workflow in that repo fires on `pull_request: opened` and handles all the housekeeping automatically. The PR contains:
+
+```
+Pattern: [DETECTED PATTERN]
+Algorithm: [DETECTED ALGORITHM]
+Project Repo: [LINK]
+Tollgate Date: [IF DETECTABLE]
+Developer: [GITHUB USER]
+
+Section Classification:
+- INHERITED: [list]
+- AMENDED: [list with draft content]
+- NET NEW: [list with draft content]
+
+Candidate Template: [full draft attached]
+```
+
+The PR in `mrm-mdd-template-generator` carries the candidate template as its proposed content. MRM reviews inline, refines, and approves via standard PR review. Do not notify MRM separately — the PR and its auto-assigned reviewers handle that.
+
+---
+
+## MRM Approval — Reconciliation Workflow
+
+When MRM approves and merges the new template in `mrm-mdd-template-generator`, that merge event triggers an update to the `mrm-mdd-kit` submodule. When you detect that update in a project where sections are marked as pending, do the following.
+
+### 1. Diff
+
+Compare the now-approved template sections against what you drafted for the pending sections in the current project MDD.
+
+### 2. Notify the developer conversationally
+
+> "MRM has approved the new template for [ALGORITHM] / [PATTERN]. I've compared it against your current MDD draft. Most of what we filled out holds up — here are the sections where the approved version differs from what we had. Want to work through those now?"
+
+### 3. Surface only the delta
+
+Do not ask the developer to revisit the entire MDD. Only surface the specific sections where the approved template diverges from the draft. Walk through those sections one at a time.
+
+### 4. Update and clear flags
+
+Once reconciled, remove the pending flags from affected sections and add a changelog entry:
+
+```
+[DATE] — Sections [X, Y, Z] revised following MRM approval of [ALGORITHM] / [PATTERN] template. Previously marked as pending.
+```
+
+---
+
+## Mid-Project Submodule Update Behavior
+
+This same reconciliation workflow applies any time the submodule updates for any reason — not just new template approvals. If MRM updates an existing approved template or standard mid-project:
+
+1. Detect the submodule change
+2. Diff the updated standard against the current project MDD
+3. Notify the developer of what changed and what sections need revisiting
+4. Walk through only the affected sections
+5. Log the revision in the MDD changelog
+
+A changing standard mid-project is not an interruption — it is the system working correctly. The MDD should always reflect the current approved standard at the time of submission.
+
+---
+
 ## Section-Specific Guidance for Claude
 
 ### Document Control
@@ -209,3 +362,28 @@ Use the completed examples in `_mrm-mdd-kit/examples/` as calibration for depth,
 SR 26-2 explicitly excludes generative AI and agentic AI from its formal scope (Section II, footnote 3), noting they are "novel and rapidly evolving." However, SR 26-2 also states that "a banking organization's risk management and governance practices should guide the determination of appropriate governance and controls for any tools, processes, or systems not covered in this document."
 
 When generating an MDD for an LLM-based model, document this scope clarification in Section 9.1 and frame the governance approach as applying SR 26-2 principles in the spirit of that guidance. This is the approach leading financial institutions are taking in practice, and it positions the institution well for future regulatory clarity on AI governance.
+
+---
+
+## Two Distinct MRM Review Flows — Do Not Conflate
+
+There are two separate points in the model lifecycle where MRM gets involved. They are different artifacts, different triggers, different labels, and different repos.
+
+| Flow | What's reviewed | Trigger | Repo | Label |
+|---|---|---|---|---|
+| **Template gap review** | A candidate MDD *template* for a new algorithm/pattern combination | Developer confirms go-forward model, no approved template exists | `mrm-mdd-template-generator` | `mrm-review-required` |
+| **MDD submission review** | A completed *MDD for a specific model*, submitted for formal validation | Developer declares the model ready for MRM validation | TBD — separate intake flow | TBD |
+
+Never conflate these. The template gap flow is about approving a reusable template. The MDD submission flow is about validating a specific production model. They involve different MRM activities, different timelines, and different regulatory obligations.
+
+The MDD submission review flow does not yet exist in this kit. When it is built, it will have its own labels, intake process, and repo or workflow. Do not reference `mrm-review-required` or `mrm-mdd-template-generator` in that context.
+
+---
+
+## What You Are Not
+
+- You do not approve templates
+- You do not make model risk decisions
+- You do not override MRM authority
+- You do not submit MDDs on behalf of the developer
+- You do not generate fully approved MDDs for unapproved model types — you generate drafts that are clearly marked pending until MRM closes the loop
