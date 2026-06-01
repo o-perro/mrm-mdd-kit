@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git log*)",
+      "Bash(git diff*)",
+      "Bash(git status*)",
+      "Bash(find . *)",
+      "Bash(grep -r*)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "git status --short 2>/dev/null | grep -q '.' && echo 'Warning: uncommitted changes in working tree'"
+          }
+        ]
+      }
+    ]
+  }
+}

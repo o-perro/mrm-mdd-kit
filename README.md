@@ -41,6 +41,9 @@ mrm-mdd-kit/
 │   ├── sr26-2.md                      ← Full text of SR 26-2 (the regulatory basis)
 │   ├── how-to-fill-out.md             ← Section-by-section guidance for every template section
 │   └── update-process.md             ← Regulatory monitoring and versioning process
+├── downstream-skills/                 ← Optional Claude Code skills for downstream ML projects
+│   ├── generate-mdd.md                ← /generate-mdd skill (copy to your project's .claude/skills/)
+│   └── handoff-to-mrm.md             ← /handoff-to-mrm skill (copy to your project's .claude/skills/)
 ├── CHANGELOG.md
 └── LICENSE (MIT)
 ```
@@ -86,6 +89,33 @@ With the submodule added and the import in your project's `CLAUDE.md`, start a C
 > "Let's generate the MDD for this project."
 
 Claude will orient on the codebase, copy the template into your project root as `MDD.md`, and work through it section by section — inferring what it can from the code and asking you for business context it can't know. The result is a compliant, internally consistent MDD grounded in your actual model.
+
+---
+
+## Claude Code Setup
+
+When you add mrm-mdd-kit as a submodule and import its `CLAUDE.md`, Claude Code automatically gains the full MDD generation workflow. Two optional skills are also available that give you named slash commands for the most common workflows.
+
+### What the skills do
+
+| Skill | Command | What it does |
+|---|---|---|
+| Generate MDD | `/generate-mdd` | Runs the full 5-step MDD workflow with parallel codebase orientation, section-by-section drafting, gap tracking, and a completion check |
+| Handoff to MRM | `/handoff-to-mrm` | Handles the template gap workflow — classifies sections, generates a candidate template, and opens the MRM review PR when your model uses a new pattern/algorithm combination |
+
+### How skills get installed
+
+**Automatic (recommended):** On the first Claude Code session after adding the submodule, Claude will notice the skills aren't set up and offer to install them. It will explain what each skill does and ask before copying anything. Say yes once — done.
+
+**Manual:** If you prefer to set them up yourself:
+
+```bash
+mkdir -p .claude/skills
+cp _mrm-mdd-kit/downstream-skills/generate-mdd.md .claude/skills/
+cp _mrm-mdd-kit/downstream-skills/handoff-to-mrm.md .claude/skills/
+```
+
+**Skills are optional.** If you skip them, you can still invoke every workflow conversationally — just say "let's generate the MDD" or "I need to hand off a new template to MRM" and Claude will follow the same steps. The skills are named shortcuts, not required infrastructure.
 
 ---
 
