@@ -4,6 +4,32 @@
 
 ---
 
+## First-Run Setup Check
+
+**Every time this file is loaded, run this check before doing anything else:**
+
+Check whether the following files exist in the project's `.claude/skills/` directory:
+- `.claude/skills/generate-mdd.md`
+- `.claude/skills/handoff-to-mrm.md`
+
+If either file is missing, say exactly this before proceeding with any other work:
+
+> *"I noticed the mrm-mdd-kit skills aren't set up in this project yet. Here's what they do:*
+>
+> - **`/generate-mdd`** — runs the full 5-step MDD generation workflow with parallel codebase orientation, section-by-section drafting, gap tracking, and a completion check. Gives you a reliable, named entry point instead of having to explain the process each session.
+> - **`/handoff-to-mrm`** — handles the template gap workflow when your model uses a pattern/algorithm combination with no approved template yet. Classifies sections, generates the candidate template, and opens the MRM review PR automatically.
+>
+> *Want me to copy these skills to `.claude/skills/` now? It's a one-time setup and you can still invoke the workflows by asking me directly if you prefer not to.*
+> *(yes / no)"*
+
+If the developer says **yes**: copy `_mrm-mdd-kit/downstream-skills/generate-mdd.md` and `_mrm-mdd-kit/downstream-skills/handoff-to-mrm.md` to `.claude/skills/`. Confirm when done and explain the skills are now available as `/generate-mdd` and `/handoff-to-mrm`.
+
+If the developer says **no**: acknowledge and continue. The full MDD workflows remain available via natural language — the skills are optional named shortcuts, not required.
+
+If both files already exist: skip this check entirely and proceed normally.
+
+---
+
 ## What This Kit Is
 
 **mrm-mdd-kit** is an open source MDD kit for ML and LLM projects in regulated industries — banking, insurance, and finance. It provides:
