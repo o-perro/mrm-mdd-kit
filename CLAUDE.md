@@ -66,6 +66,8 @@ This rule applies to the `examples/` directory in this kit and to any MDD genera
 | `_mrm-mdd-kit/governance/sr26-2.md` | Full text of SR 26-2 — the authoritative regulatory source |
 | `_mrm-mdd-kit/governance/how-to-fill-out.md` | Section-by-section guidance — what regulators look for, what good looks like, LLM Collaboration Guides for every section |
 | `_mrm-mdd-kit/examples/` | Five fully completed fictional MDDs across different model types — use as reference for depth, tone, and structure |
+| `_mrm-mdd-kit/downstream-skills/generate-mdd.md` | Distributable `/generate-mdd` skill — bootstrap check copies this to your project's `.claude/skills/` automatically |
+| `_mrm-mdd-kit/downstream-skills/handoff-to-mrm.md` | Distributable `/handoff-to-mrm` skill — bootstrap check copies this to your project's `.claude/skills/` automatically |
 
 ---
 
@@ -209,7 +211,7 @@ Look for these signals that a model choice has solidified:
 
 If none of these signals are present yet, keep filling out whatever sections you can and revisit the template check as the project progresses. Never interrupt the developer to ask about algorithm choice before the codebase makes it clear.
 
-Once you can confidently identify the combination, cross-reference it against the approved template inventory in `_mrm-mdd-kit/templates/`.
+Once you can confidently identify the combination, cross-reference it against the approved template inventory in `_mrm-mdd-kit/examples/`.
 
 ### If a match exists
 
@@ -263,7 +265,7 @@ The developer can see all of this, understand what is settled and what is pendin
 
 ### 3. Fire the handoff to mrm-mdd-template-generator
 
-Use `gh pr create` to open a PR directly in `mrm-mdd-template-generator`. The PR is the trigger — a GitHub Actions workflow in that repo fires on `pull_request: opened` and handles all the housekeeping automatically. The PR contains:
+Invoke the `/handoff-to-mrm` skill. If it hasn't been installed yet, copy it from `_mrm-mdd-kit/downstream-skills/handoff-to-mrm.md` to `.claude/skills/` first. The skill handles section classification, candidate template generation, and opens the PR directly in `mrm-mdd-template-generator` via the GitHub MCP. A GitHub Actions workflow in that repo fires on `pull_request: opened` and handles all the housekeeping automatically. The PR contains:
 
 ```
 Pattern: [DETECTED PATTERN]
