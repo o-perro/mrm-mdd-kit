@@ -25,7 +25,7 @@ flowchart TD
 
     B -- Later, once model\nis taking shape --> C2[Claude Code does\na catch-up pass\nReads codebase top to bottom\nFills what exists now\nPlaceholders for remainder]
 
-    C1 --> BA["Bootstrap check fires automatically\non first Claude Code session\nKit CLAUDE.md import triggers check:\nAre /generate-mdd and\n/handoff-to-mrm installed?\n\nIf missing — Claude explains each skill\nand offers to copy from downstream-skills/\nOne-time setup · takes seconds"]
+    C1 --> BA["Bootstrap check — runs every session\nKit CLAUDE.md import triggers it automatically\n\nChecks: are /generate-mdd and\n/handoff-to-mrm in .claude/skills/?\n\nIf missing → Claude explains each skill\nand offers to copy from downstream-skills/\nIf present → silent no-op · proceed normally\n\nSkills must live in the downstream project\nnot the submodule — Claude resolves skills\nrelative to working directory only"]
     C2 --> BA
 
     BA --> BC["/generate-mdd invoked\n\nParallel Explore agents orient\non codebase simultaneously:\ntraining code · data pipeline · config\n\nStep 0 complete — section drafting begins"]
