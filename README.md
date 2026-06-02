@@ -105,7 +105,7 @@ When you add mrm-mdd-kit as a submodule and import its `CLAUDE.md`, Claude Code 
 
 ### How skills get installed
 
-**Automatic (recommended):** On the first Claude Code session after adding the submodule, Claude will notice the skills aren't set up and offer to install them. It will explain what each skill does and ask before copying anything. Say yes once — done.
+**Automatic (recommended):** The kit's `CLAUDE.md` includes a bootstrap check that runs at the start of every Claude Code session in your project. It checks whether `/generate-mdd` and `/handoff-to-mrm` are present in your project's `.claude/skills/` directory. If either is missing, Claude explains what each skill does and offers to copy them from `_mrm-mdd-kit/downstream-skills/` — before doing anything else. Say yes once and it's done. On every subsequent session the check runs silently and finds the skills already there, so you never see it again.
 
 **Manual:** If you prefer to set them up yourself:
 
@@ -115,7 +115,17 @@ cp _mrm-mdd-kit/downstream-skills/generate-mdd.md .claude/skills/
 cp _mrm-mdd-kit/downstream-skills/handoff-to-mrm.md .claude/skills/
 ```
 
-**Skills are optional.** If you skip them, you can still invoke every workflow conversationally — just say "let's generate the MDD" or "I need to hand off a new template to MRM" and Claude will follow the same steps. The skills are named shortcuts, not required infrastructure.
+**Skills are optional.** If you skip them, every workflow is still available conversationally — just say "let's generate the MDD" or "I need to hand off a new template to MRM" and Claude follows the same steps. The skills are named shortcuts, not required infrastructure.
+
+### Why skills live in your project, not in the submodule
+
+This is worth understanding because it's non-obvious.
+
+Claude Code resolves skills relative to the **working directory** — the root of the project you have open, not the root of any submodule inside it. That means skill files sitting inside the submodule at `_mrm-mdd-kit/.claude/skills/` are completely invisible to Claude when you're working in your ML project. They might as well not exist.
+
+The solution is the `downstream-skills/` directory in the kit root. Those files are designed to be copied once into your project's own `.claude/skills/` directory, where Claude can actually find them. The bootstrap check in `CLAUDE.md` automates that copy so you don't have to remember it.
+
+The `@./_mrm-mdd-kit/CLAUDE.md` import only pulls in the **text** of that file — the instructions, the workflow steps, the section guidance. It does not share the submodule's `.claude/` directory or make its skills available. Think of it as copy-pasting the instructions into your project's context. The skills need to physically live in your project for Claude to use them as named `/commands`.
 
 ---
 
