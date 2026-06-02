@@ -44,8 +44,13 @@ mrm-mdd-kit/
 ├── downstream-skills/                 ← Optional Claude Code skills for downstream ML projects
 │   ├── generate-mdd.md                ← /generate-mdd skill (copy to your project's .claude/skills/)
 │   └── handoff-to-mrm.md             ← /handoff-to-mrm skill (copy to your project's .claude/skills/)
+├── .claude/
+│   ├── settings.json                  ← Claude Code hooks + bash allowlist (kit development)
+│   └── skills/
+│       └── validate-mdd.md            ← /validate-mdd skill (kit development only)
+├── mdd-ai-workflow.md                 ← End-to-end process flow diagram (Mermaid)
 ├── CHANGELOG.md
-└── LICENSE (MIT)
+└── LICENSE (Apache 2.0)
 ```
 
 Each example contains a `scenario.md` (plain English fictional backstory) and a fully completed `MDD.md` demonstrating the expected depth, tone, and structure across five different model types.
@@ -64,7 +69,7 @@ Adding the kit as a submodule lets you pin to a specific version and bump delibe
 
 ```bash
 # Add the kit to your project
-git submodule add https://github.com/gabrieleolson/mrm-mdd-kit _mrm-mdd-kit
+git submodule add https://github.com/o-perro/mrm-mdd-kit _mrm-mdd-kit
 
 # After cloning a project that uses this kit
 git submodule update --init
